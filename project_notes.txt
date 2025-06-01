@@ -1,0 +1,195 @@
+1. Data Loading and Preparation
+            import pandas as pd
+            import numpy as np
+            df = pd.read_csv('delaney_solubility_with_descriptors.csv')
+            y = df['logS']
+            X = df.drop('logS', axis=1)
+    Purpose: Loads and prepares the dataset for modeling
+
+    Details:
+
+    Imports Pandas (for data manipulation) and NumPy (for numerical operations)
+
+    Reads a CSV file named 'delaney_solubility_with_descriptors.csv' into a DataFrame
+
+    Creates:
+
+    y: Target variable (logS, which is log of solubility)
+
+    X: Feature matrix (all columns except logS)
+
+2. Train-Test Split
+            from sklearn.model_selection import train_test_split
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, 
+                y, 
+                test_size=0.2, 
+                random_state=100)
+    Purpose: Splits data into training and test sets
+
+    Details:
+
+    Uses scikit-learn's train_test_split function
+
+    Parameters:
+
+    test_size=0.2: 20% of data reserved for testing
+
+    random_state=100: Ensures reproducible splits
+
+    Outputs four datasets:
+
+    X_train: Features for training
+
+    X_test: Features for testing
+
+    y_train: Target values for training
+
+    y_test: Target values for testing
+
+3. Model Training
+            from sklearn.linear_model import LinearRegression
+
+            lr = LinearRegression()
+            lr.fit(X_train, y_train)
+    Purpose: Creates and trains a linear regression model
+
+    Details:
+
+    Initializes a LinearRegression object
+
+    Fits the model to the training data using the fit() method
+
+    The model learns coefficients that minimize the residual sum of squares
+
+
+4. Making Predictions
+            y_lr_train_pred = lr.predict(X_train)
+            y_lr_test_pred = lr.predict(X_test)
+    Purpose: Generates predictions for both training and test sets
+
+    Details:
+
+    predict() method applies the trained model to input data
+
+    Creates:
+
+    y_lr_train_pred: Predictions on training data
+
+    y_lr_test_pred: Predictions on test data
+
+
+5. Model Evaluation
+            from sklearn.metrics import mean_squared_error, r2_score
+
+            lr_train_mse = mean_squared_error(y_train, y_lr_train_pred)
+            lr_train_r2 = r2_score(y_train, y_lr_train_pred)
+
+            lr_test_mse = mean_squared_error(y_test, y_lr_test_pred)
+            lr_test_r2 = r2_score(y_test, y_lr_test_pred)
+    Purpose: Evaluates model performance using metrics
+
+    Details:
+
+    Mean Squared Error (MSE):
+
+    Average of squared differences between predicted and actual values
+
+    Lower values indicate better fit
+
+    Sensitive to outliers (due to squaring)
+
+    R-squared (R²):
+
+    Proportion of variance in target explained by features
+
+    Ranges from 0 (worst) to 1 (best)
+
+    0.76-0.79 indicates moderately strong performance
+
+6. Results Interpretation
+            print('LR MSE (Train):', lr_train_mse)
+            print('LR R2 (Train):', lr_train_r2)
+            print('LR MSE (Test):', lr_test_mse)
+            print('LR R2 (Test):', lr_test_r2)
+    Output Analysis:
+
+    Training MSE (1.008) vs Test MSE (1.021):
+
+    Very close values suggest the model generalizes well
+
+    No significant overfitting
+
+    Training R² (0.765) vs Test R² (0.789):
+
+    Slightly better performance on test set is unusual but possible
+
+    May indicate test set is easier to predict or well-represented by training data
+
+
+7. Plotting The Interpretation
+            lr_results = pd.DataFrame(['linear_regression', lr_train_mse, lr_train_r2, lr_test_mse, lr_test_r2]).transpose()
+            lr_results.columns = ['model', 'Training MSE', 'Training R2', 'Test MSE', 'Test R2']
+            lr_results
+
+    What This Code Does:
+    Creates a DataFrame:
+    Takes a list containing:
+
+    Model name ('linear_regression')
+    Training MSE (lr_train_mse)
+    Training R² (lr_train_r2)
+    Test MSE (lr_test_mse)
+    Test R² (lr_test_r2)
+
+    The .transpose() converts this from a column to a row format
+
+    Sets Column Names:
+
+    Assigns descriptive column names to make the results clear
+
+    Displays the Results:
+
+    Shows a clean table with all metrics in one row
+
+    Expected Output:
+    The output will look something like this:
+
+    model	Training MSE	Training R2	Test MSE	Test R2
+    linear_regression	1.0075	0.7645	1.0207	0.7892
+    Why This Is Useful:
+    Organization: Keeps all model metrics in one structured format
+
+    Comparison: Makes it easy to compare multiple models if you add more rows
+
+    Documentation: Provides a clear record of model performance
+
+    Reproducibility: Helps when sharing results with others
+
+    Improvement Suggestion:
+    For better practice, you might want to:
+    Round the decimal places for readability:
+    lr_results = lr_results.round(4)
+    Store this for future comparison if testing other models
+
+    This is an excellent way to track your model's performance, especially if you plan to experiment with different algorithms or parameters later.
+
+
+Key Takeaways
+    The model shows consistent performance between training and test sets
+
+    The R² values (~0.77) indicate the model explains about 77% of variance in solubility
+
+    The small gap between train/test metrics suggests good generalization
+
+    For molecular solubility prediction, this is reasonable performance, though there may be room for improvement
+
+    Potential next steps:
+
+    Examine residual plots to check for patterns in errors
+
+    Try more complex models (Random Forest, Gradient Boosting)
+
+    Perform feature selection or engineering
+
+    Check for outliers or data quality issues
